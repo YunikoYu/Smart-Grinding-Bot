@@ -1,13 +1,10 @@
 /*  File: qualityBot.ch
- *  This program uses 2 Linkbot-Ls to make a two-whel omnidrive robot
- *  where each wheel can turn. 
- *  The robots are connected to the grinding bot frame,
- *  where joint 2 controls the plunger system and 
- *  joint 1 controls the wheels.
+ *  This program uses 1 Linkbot-I to control the drive 
+ *  of the quality bot and to record the position.
  *  
  *  Top View
  *   
- *   robot1
+ *   robot
  *    ___
  *   |   |
  *  1|   |2
@@ -20,41 +17,58 @@
 Initializing
 *****************************************************/
 #include <linkbot.h>
+#include <chplot.h>
 
 //Define linkbots
-robot1 = robot.connectWithSerialID(”serialID1”);
+robot = robot.connectWithSerialID(”serialID1”);
 
-CLinkbotI robot1;
-robot1.resetToZeroNB(); //zero position
-int dir = 0;//set positive direction
+CLinkbotI robot;
+double radius = 1.75 //radius of 1.75 inches
+double trackwidth = 3.69;  // the track width, the distance between two wheels
+double timeInterval = 0.1; // time interval in 0.1 second 
+int numDataPoints;         // number of data points recorded
+robotRecordData_t xdata, ydata; // recorded x and y positions 
+CPlot plot;                // plotting class
+
+//Origin position
+
+double x,y,ori;
+x=0,; y=0; angle1=90;
+robot.initPosition(x,y,angle1); //zero position
 
 int main(){
 
 /***************************************************
 Move and record the path
 ****************************************************/            
-          /*move foward by some increment*/
-          robot1.moveNB(-angle,0,NaN);
-          robot2.moveNB(angle,0,NaN);
+/* begin recording x and y positions */
+robot.recordxyBegin(xdata, ydata, timeInterval);          
+
+//move forward
 
           while (1) {
-              //if at origin
-                  //break out of loop
-              // elseif senses blue
-                  if(dir % 2 == 0) //positive direction
+              robot.traceOn();
+              if (x=0 && y = 0 && angle=0) //if at origin
+                  robot.traceOff();
+                  break; //break out of loop
+             
+              // elseif senses blue, turn depending on the orientation   
+                  if(y % 2 == 0) //positive direction
                       /*turn right 180 deg*/
-                      robot1.moveJointToNB(JOINT1, -180);
+                      robot.moveJointToNB(JOINT1, -180);
                       robot1.moveJointToNB(JOINT1, 180);
                   else 
                       /*turn left 180 deg*/
                       robot1.moveJointToNB(JOINT1, 180);
                       robot1.moveJointToNB(JOINT1, -180);
-              //else 
-                  //move foward
-              dir = dir++;
+               robot.//move foward
+               
+       
               }
 
-          break;
+/* end recording x and y positions */
+robot.recordxyEnd(numDataPoints);
+
 
     }
 
